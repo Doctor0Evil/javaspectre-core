@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "chains": [
+    {
+      "logicalName": "bostrom",
+      "type": "cosmos",
+      "chainId": "bostrom",
+      "rpc": "https://rpc.bostrom.cybernode.ai",
+      "rest": "https://lcd.bostrom.cybernode.ai",
+      "denom": "boot",
+      "bech32Prefix": "bostrom",
+      "role": "neuro-semantic",
+      "defaultIbcChannels": {}
+    },
+    {
+      "logicalName": "fetchhub",
+      "type": "cosmos",
+      "chainId": "fetchhub-4",
+      "rpc": "https://rpc-fetchhub.yourdomain",
+      "rest": "https://rest-fetchhub.yourdomain",
+      "denom": "afet",
+      "bech32Prefix": "fetch",
+      "role": "agentic-economy",
+      "defaultIbcChannels": {}
+    },
+    {
+      "logicalName": "aln",
+      "type": "cosmos",
+      "chainId": "aln-1",
+      "rpc": "https://rpc.aln.yourdomain",
+      "rest": "https://rest.aln.yourdomain",
+      "denom": "ualn",
+      "bech32Prefix": "aln",
+      "role": "cognitive-governance",
+      "defaultIbcChannels": {}
+    },
+    {
+      "logicalName": "organichain",
+      "type": "cosmos",
+      "chainId": "organichain-1",
+      "rpc": "https://rpc.organichain.yourdomain",
+      "rest": "https://rest.organichain.yourdomain",
+      "denom": "uorg",
+      "bech32Prefix": "org",
+      "role": "bio-systems",
+      "defaultIbcChannels": {}
+    },
+    {
+      "logicalName": "biotech",
+      "type": "cosmos",
+      "chainId": "biotech-1",
+      "rpc": "https://rpc.biotech.yourdomain",
+      "rest": "https://rest.biotech.yourdomain",
+      "denom": "ubio",
+      "bech32Prefix": "bio",
+      "role": "biophysical-research",
+      "defaultIbcChannels": {}
+    },
+    {
+      "logicalName": "ghostnet",
+      "type": "overlay",
+      "network": "ghostnet-v1",
+      "apiBase": "https://ghostnet.yourdomain",
+      "role": "private-messaging"
+    }
+  ]
+}
