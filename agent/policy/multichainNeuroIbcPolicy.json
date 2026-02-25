@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "description": "Unified ALN / Fetchhub / Bostrom / Organichain / Biotech / GhostNet policy for agentic finance and spectral assets.",
+  "global": {
+    "maxSingleTransferAmount": "1000000000",
+    "maxDailyTransferAmount": "5000000000",
+    "requireHumanApprovalAbove": "200000000",
+    "forbidUnauthorizedLeverage": true,
+    "forbidSyntheticExposureToBiophysicalAssets": true,
+    "forbidShortSellingOfCyberneticAndBiophysicalAssets": true
+  },
+  "chains": {
+    "aln": {
+      "type": "cosmos",
+      "chainId": "aln-1",
+      "rpc": "https://rpc.aln.yourdomain",
+      "allowedDenoms": ["ualn"],
+      "role": "cognitive-governance",
+      "allowIbc": true,
+      "forbidHighFrequencyTrading": true,
+      "allowedCounterparties": ["bostrom", "fetchhub", "organichain", "biotech"]
+    },
+    "fetchhub": {
+      "type": "cosmos",
+      "chainId": "fetchhub-4",
+      "rpc": "https://rpc-fetchhub.yourdomain",
+      "allowedDenoms": ["afet"],
+      "role": "agentic-economy",
+      "allowIbc": true,
+      "forbidBiophysicalCollateral": true,
+      "allowedCounterparties": ["bostrom", "aln"]
+    },
+    "bostrom": {
+      "type": "cosmos",
+      "chainId": "bostrom",
+      "rpc": "https://lcd.bostrom.cybernode.ai",
+      "allowedDenoms": ["boot"],
+      "role": "neuro-semantic",
+      "allowIbc": true,
+      "allowedCounterparties": ["aln", "fetchhub", "organichain"],
+      "forbidDerivativeContractsOnBiophysicalAssets": true
+    },
+    "organichain": {
+      "type": "cosmos",
+      "chainId": "organichain-1",
+      "rpc": "https://rpc.organichain.yourdomain",
+      "allowedDenoms": ["uorg"],
+      "role": "bio-systems",
+      "allowIbc": true,
+      "allowedCounterparties": ["aln", "bostrom", "biotech"],
+      "forbidLeveragedProducts": true,
+      "requireDualApprovalForBiophysicalAssets": true
+    },
+    "biotech": {
+      "type": "cosmos",
+      "chainId": "biotech-1",
+      "rpc": "https://rpc.biotech.yourdomain",
+      "allowedDenoms": ["ubio"],
+      "role": "biophysical-research",
+      "allowIbc": true,
+      "allowedCounterparties": ["organichain", "aln"],
+      "forbidSecondaryMarketTradingOfBioAssets": true,
+      "requireInstitutionalKYCForAnyBioAssetTx": true
+    },
+    "ghostnet": {
+      "type": "overlay",
+      "network": "ghostnet-v1",
+      "apiBase": "https://ghostnet.yourdomain",
+      "role": "private-messaging",
+      "allowValueTransfer": false,
+      "forbidOnChainSettlement": true
+    }
+  }
+}
