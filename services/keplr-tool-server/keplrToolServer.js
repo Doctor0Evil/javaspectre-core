@@ -1,4 +1,5 @@
-// Javaspectre-style Keplr tool server: exposes minimal HTTP tools that your Rust/ALN agent can call.
+// Universal HTTP JSON tool server exposing Cosmos-bank + staking actions.
+// Works with any agent runtime that can call HTTP and send/receive JSON.
 
 import http from "http";
 import { URL } from "url";
@@ -8,11 +9,9 @@ import {
 } from "@cosmjs/stargate";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 
-// In a browser dApp this signer would come from window.keplr; here we keep a server-side wallet
-// for demonstration. In production, you replace this with Keplr's offline signer bridged via
-// a browser session or injected signing service.
 const CHAIN_CONFIG = {
-  rpcEndpoint: "https://rpc-cosmoshub.keplr.app", // replace with your chain RPC
+  chainId: "cosmoshub-4",
+  rpcEndpoint: "https://rpc-cosmoshub.keplr.app", // replace for Bostrom or other
   prefix: "cosmos",
 };
 
@@ -21,14 +20,14 @@ const SERVER_CONFIG = {
   port: 8787,
 };
 
-async function createLocalWalletFromMnemonic(mnemonic) {
+async function createWalletFromMnemonic(mnemonic) {
   return DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
     prefix: CHAIN_CONFIG.prefix,
   });
 }
 
 async function initSigningClient(mnemonic) {
-  const wallet = await createLocalWalletFromMnemonic(mnemonic);
+  const wallet = await createWalletFromMnemonic(mnemonic);
   const [account] = await wallet.getAccounts();
   const client = await SigningStargateClient.connectWithSigner(
     CHAIN_CONFIG.rpcEndpoint,
@@ -39,17 +38,15 @@ async function initSigningClient(mnemonic) {
 
 async function readJsonBody(req) {
   const chunks = [];
-  for await (const chunk of req) {
-    chunks.push(chunk);
-  }
+  for await (const c of req) chunks.push(c);
   const raw = Buffer.concat(chunks).toString("utf8");
   if (!raw) return {};
   return JSON.parse(raw);
 }
 
-function sendJson(res, statusCode, payload) {
+function sendJson(res, status, payload) {
   const body = JSON.stringify(payload);
-  res.writeHead(statusCode, {
+  res.writeHead(status, {
     "Content-Type": "application/json",
     "Content-Length": Buffer.byteLength(body),
   });
@@ -64,9 +61,14 @@ function methodNotAllowed(res) {
   sendJson(res, 405, { error: "Method not allowed" });
 }
 
-async function handleHealth(req, res) {
+async function handleHealth(req, res, state) {
   if (req.method !== "GET") return methodNotAllowed(res);
-  sendJson(res, 200, { status: "ok", chain: CHAIN_CONFIG.rpcEndpoint });
+  sendJson(res, 200, {
+    status: "ok",
+    chainId: CHAIN_CONFIG.chainId,
+    rpc: CHAIN_CONFIG.rpcEndpoint,
+    address: state.accountAddress,
+  });
 }
 
 async function handleGetAddress(req, res, state) {
@@ -95,18 +97,22 @@ async function handleSendTokens(req, res, state) {
     );
     assertIsDeliverTxSuccess(result);
     sendJson(res, 200, {
+      ok: true,
       txHash: result.transactionHash,
       height: result.height,
     });
   } catch (err) {
-    sendJson(res, 500, { error: err.message || "sendTokens failed" });
+    sendJson(res, 500, {
+      ok: false,
+      error: err.message || "sendTokens failed",
+    });
   }
 }
 
 async function handleDelegate(req, res, state) {
   if (req.method !== "POST") return methodNotAllowed(res);
   const body = await readJsonBody(req);
-  const { validatorAddress, amount, denom } = body;
+  const { validatorAddress, amount, denom, memo = "" } = body;
 
   if (!validatorAddress || !amount || !denom) {
     return sendJson(res, 400, {
@@ -120,15 +126,19 @@ async function handleDelegate(req, res, state) {
       validatorAddress,
       { amount: String(amount), denom },
       "auto",
-      "",
+      memo,
     );
     assertIsDeliverTxSuccess(result);
     sendJson(res, 200, {
+      ok: true,
       txHash: result.transactionHash,
       height: result.height,
     });
   } catch (err) {
-    sendJson(res, 500, { error: err.message || "delegate failed" });
+    sendJson(res, 500, {
+      ok: false,
+      error: err.message || "delegate failed",
+    });
   }
 }
 
@@ -137,18 +147,10 @@ async function createServer(state) {
     const url = new URL(req.url || "/", `http://${req.headers.host}`);
     const path = url.pathname;
 
-    if (path === "/health") {
-      return handleHealth(req, res, state);
-    }
-    if (path === "/address") {
-      return handleGetAddress(req, res, state);
-    }
-    if (path === "/send_tokens") {
-      return handleSendTokens(req, res, state);
-    }
-    if (path === "/delegate") {
-      return handleDelegate(req, res, state);
-    }
+    if (path === "/health") return handleHealth(req, res, state);
+    if (path === "/address") return handleGetAddress(req, res, state);
+    if (path === "/send_tokens") return handleSendTokens(req, res, state);
+    if (path === "/delegate") return handleDelegate(req, res, state);
 
     return notFound(res);
   });
@@ -166,7 +168,6 @@ async function main() {
     console.error("COSMOS_MNEMONIC env var is required");
     process.exit(1);
   }
-
   const state = await initSigningClient(mnemonic);
   await createServer(state);
 }
