@@ -1,0 +1,48 @@
+{
+  "name": "javaspectre-core",
+  "version": "0.2.0",
+  "description": "Javaspectre virtual-object excavation core engine with SQLite-backed persistence, safety envelopes, NanoVolume metrics, and anchoring CLIs.",
+  "type": "module",
+  "main": "src/cli/inspect.js",
+  "bin": {
+    "javaspectre-inspect": "src/cli/inspect.js",
+    "javaspectre-inspect-safe": "src/cli/inspect-safe.js",
+    "javaspectre-inspect-dom": "src/cli/inspect-dom.js",
+    "javaspectre-inspect-trace": "src/cli/inspect-trace.js",
+    "javaspectre-inspect-har": "src/cli/inspect-har.js",
+    "javaspectre-nanovolume-top": "src/cli/nanovolume-top.js"
+  },
+  "scripts": {
+    "inspect": "node src/cli/inspect.js",
+    "inspect:safe": "node src/cli/inspect-safe.js",
+    "inspect:dom": "node src/cli/inspect-dom.js",
+    "inspect:trace": "node src/cli/inspect-trace.js",
+    "inspect:har": "node src/cli/inspect-har.js",
+    "nanovolume:top": "node src/cli/nanovolume-top.js",
+    "migrate": "node src/core/PersistenceMigrate.js",
+    "test": "node --test",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "11.8.1"
+  },
+  "devDependencies": {
+    "eslint": "9.11.0"
+  },
+  "keywords": [
+    "javaspectre",
+    "virtual-object",
+    "sqlite",
+    "observability",
+    "dom",
+    "opentelemetry",
+    "har",
+    "transparency-envelope",
+    "nanovolume"
+  ],
+  "author": "Javaspectre Initiative",
+  "license": "MIT"
+}
