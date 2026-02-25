@@ -1,0 +1,7 @@
+{
+  "maxSingleTransferAmount": "1000000",
+  "allowedDenoms": ["uatom", "boot"],
+  "allowedChains": ["cosmoshub-4", "bostrom"],
+  "allowlistedValidators": [],
+  "allowAllValidators": true
+}
