@@ -1,0 +1,146 @@
+{
+  "tools": [
+    {
+      "name": "cosmos_send_tokens",
+      "description": "Send Cosmos-SDK bank tokens from the configured wallet on a specific chain to another address on the same chain, respecting ALN/cybernetic/biophysical policies.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "chain": {
+            "type": "string",
+            "description": "Logical chain name: 'aln', 'fetchhub', 'bostrom', 'organichain', or 'biotech'."
+          },
+          "toAddress": {
+            "type": "string",
+            "description": "Bech32 recipient address on the same chain."
+          },
+          "amount": {
+            "type": "string",
+            "description": "Token amount in base units (e.g. ualn, boot, uorg, ubio, afet)."
+          },
+          "denom": {
+            "type": "string",
+            "description": "Token denomination allowed by policy for that chain."
+          },
+          "memo": {
+            "type": "string",
+            "description": "Optional memo for the transaction.",
+            "nullable": true
+          },
+          "humanApproved": {
+            "type": "boolean",
+            "description": "True if a human has explicitly approved this transfer (required above certain thresholds)."
+          }
+        },
+        "required": ["chain", "toAddress", "amount", "denom"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cosmos_ibc_transfer",
+      "description": "Perform an IBC token transfer between two Cosmos-style chains in the Neuro-IBC zone set, subject to ALN and biophysical/spectral safety policies.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceChain": {
+            "type": "string",
+            "description": "Logical source chain name: 'aln', 'fetchhub', 'bostrom', 'organichain', or 'biotech'."
+          },
+          "destinationChain": {
+            "type": "string",
+            "description": "Logical destination chain name from the same set."
+          },
+          "sourceChannel": {
+            "type": "string",
+            "description": "IBC channel identifier on the source chain (e.g. 'channel-0')."
+          },
+          "toAddress": {
+            "type": "string",
+            "description": "Recipient address on the destination chain."
+          },
+          "amount": {
+            "type": "string",
+            "description": "Token amount in base units."
+          },
+          "denom": {
+            "type": "string",
+            "description": "Source chain denom (before IBC tracing)."
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Timeout in seconds for the IBC transfer.",
+            "default": 600
+          },
+          "memo": {
+            "type": "string",
+            "description": "Optional memo for the IBC packet.",
+            "nullable": true"
+          },
+          "humanApproved": {
+            "type": "boolean",
+            "description": "Whether a human has explicitly approved this cross-chain movement."
+          },
+          "biophysicalAsset": {
+            "type": "boolean",
+            "description": "True if this transfer is associated with a biophysical or biotech asset; used to enforce stricter rules.",
+            "default": false
+          },
+          "cyberneticAsset": {
+            "type": "boolean",
+            "description": "True if this transfer is associated with a cybernetic or neuro-spectral asset; used to enforce stricter rules.",
+            "default": false
+          }
+        },
+        "required": [
+          "sourceChain",
+          "destinationChain",
+          "sourceChannel",
+          "toAddress",
+          "amount",
+          "denom"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cosmos_governance_vote",
+      "description": "Submit a governance vote on a target chain (e.g. ALN, Bostrom, Organichain, Biotech) with explicit policy tags for cybernetic/biophysical/spectral impact.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "chain": {
+            "type": "string",
+            "description": "Logical chain name: 'aln', 'bostrom', 'organichain', 'biotech', or 'fetchhub'."
+          },
+          "proposalId": {
+            "type": "string",
+            "description": "On-chain proposal ID."
+          },
+          "voteOption": {
+            "type": "string",
+            "description": "One of 'VOTE_OPTION_YES', 'VOTE_OPTION_NO', 'VOTE_OPTION_NO_WITH_VETO', or 'VOTE_OPTION_ABSTAIN'."
+          },
+          "memo": {
+            "type": "string",
+            "description": "Optional memo for the vote transaction.",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags describing proposal domain; used for ALN/cybernetic/biophysical policy evaluation.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requiresHumanApproval": {
+            "type": "boolean",
+            "description": "If true, the host must obtain human approval before submitting vote.",
+            "default": true
+          }
+        },
+        "required": ["chain", "proposalId", "voteOption"],
+        "additionalProperties": false
+      }
+    }
+  ]
+}
