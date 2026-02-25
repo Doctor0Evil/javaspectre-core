@@ -1,0 +1,60 @@
+{
+  "tools": [
+    {
+      "name": "cosmos_send_tokens",
+      "description": "Send Cosmos-SDK bank tokens from the configured Keplr-linked wallet to another address.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "toAddress": {
+            "type": "string",
+            "description": "Bech32 recipient address on the same chain."
+          },
+          "amount": {
+            "type": "string",
+            "description": "Token amount in base units (e.g. uatom, boot, etc.)."
+          },
+          "denom": {
+            "type": "string",
+            "description": "Denomination, such as 'uatom' or 'boot'."
+          },
+          "memo": {
+            "type": "string",
+            "description": "Optional memo for the transaction.",
+            "nullable": true
+          }
+        },
+        "required": ["toAddress", "amount", "denom"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cosmos_delegate_stake",
+      "description": "Delegate staking tokens from the configured Keplr-linked wallet to a validator.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "validatorAddress": {
+            "type": "string",
+            "description": "Bech32 validator operator address (e.g. cosmosvaloper...)."
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount to delegate in base units."
+          },
+          "denom": {
+            "type": "string",
+            "description": "Staking token denom (e.g. 'uatom')."
+          },
+          "memo": {
+            "type": "string",
+            "description": "Optional memo for the transaction.",
+            "nullable": true
+          }
+        },
+        "required": ["validatorAddress", "amount", "denom"],
+        "additionalProperties": false
+      }
+    }
+  ]
+}
