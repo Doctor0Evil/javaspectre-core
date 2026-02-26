@@ -2,6 +2,8 @@
 
 import crypto from 'node:crypto';
 import { BinaryStringClassifier } from './BinaryStringClassifier.js';
+import { TlvFrameExcavator } from './TlvFrameExcavator.js';
+import { VarintFrameExcavator } from './VarintFrameExcavator.js';
 
 let nextId = 0;
 function genId(prefix) {
@@ -14,9 +16,18 @@ export class BinaryVirtualObjectExcavator {
     this.classifier = options.classifier instanceof BinaryStringClassifier
       ? options.classifier
       : new BinaryStringClassifier(options.classifier || {});
+
     this.maxPreviewBytes = typeof options.maxPreviewBytes === 'number'
       ? options.maxPreviewBytes
       : 32;
+
+    this.tlvExcavator = options.tlvExcavator instanceof TlvFrameExcavator
+      ? options.tlvExcavator
+      : new TlvFrameExcavator(options.tlv || {});
+
+    this.varintExcavator = options.varintExcavator instanceof VarintFrameExcavator
+      ? options.varintExcavator
+      : new VarintFrameExcavator(options.varint || {});
   }
 
   /**
@@ -35,16 +46,18 @@ export class BinaryVirtualObjectExcavator {
     virtualObjects.push(baseVO);
 
     if (classified.kind === 'hex' && classified.normalized) {
-      const hexVOs = this._deriveHexViews(rootId, classified.normalized);
-      for (const vo of hexVOs.virtualObjects) {
-        virtualObjects.push(vo);
-      }
-      for (const rel of hexVOs.relationships) {
-        relationships.push(rel);
-      }
-    }
+      const hexMeta = this._deriveHexViews(rootId, classified.normalized);
+      virtualObjects.push(...hexMeta.virtualObjects);
+      relationships.push(...hexMeta.relationships);
 
-    // Additional decoders (TLV, varint frames, etc.) can be plugged here.
+      const tlv = this.tlvExcavator.excavate(rootId, classified.normalized);
+      virtualObjects.push(...tlv.virtualObjects);
+      relationships.push(...tlv.relationships);
+
+      const varFrames = this.varintExcavator.excavate(rootId, classified.normalized);
+      virtualObjects.push(...varFrames.virtualObjects);
+      relationships.push(...varFrames.relationships);
+    }
 
     return {
       rootId,
@@ -60,7 +73,7 @@ export class BinaryVirtualObjectExcavator {
     const preview = this._preview(raw);
 
     const fields = {
-      rawLength: raw.length,
+      rawLength: typeof raw === 'string' ? raw.length : 0,
       kind: classified.kind,
       score: classified.score,
       normalizedLength: classified.normalized ? classified.normalized.length : null,
@@ -99,7 +112,6 @@ export class BinaryVirtualObjectExcavator {
       isEvenLength: hex.length % 2 === 0,
       startsWith00: hex.startsWith('00'),
       startsWithFF: hex.startsWith('ff'),
-      // Simple rough entropy estimate: frequency of each nibble.
       nibbleHistogram: this._nibbleHistogram(hex)
     };
 
@@ -121,7 +133,6 @@ export class BinaryVirtualObjectExcavator {
       name: 'hex-meta'
     });
 
-    // Sample: first few bytes as integer window for pattern research.
     const sampleId = genId('hexsample-');
     const sampleBytes = this._sampleBytes(hex, 8);
     const sampleFields = {
@@ -150,10 +161,14 @@ export class BinaryVirtualObjectExcavator {
   }
 
   _hash(alg, input) {
-    return crypto.createHash(alg).update(input, 'utf8').digest('hex');
+    const text = typeof input === 'string' ? input : String(input);
+    return crypto.createHash(alg).update(text, 'utf8').digest('hex');
   }
 
   _preview(str) {
+    if (typeof str !== 'string') {
+      return '';
+    }
     if (str.length <= this.maxPreviewBytes * 2) {
       return str;
     }
@@ -191,7 +206,6 @@ export class BinaryVirtualObjectExcavator {
     }
     const buf = Buffer.from(hexBytes, 'hex');
     if (buf.length === 0 || buf.length > 6) {
-      // Avoid overflow in JS safe integer range.
       return null;
     }
     let value = 0;
