@@ -1,0 +1,37 @@
+{
+  "ko_id": "sourzewizard.ko.javaspectre.complete.v1",
+  "ko_scope": "sourzewizard.aln.syntax-dev",
+  "ko_purpose": "Complete Javaspectre ALN-Blockchain research kernel with all 8 production-ready files for excavation, scoring, safety, anchoring, governance, and bootstrap wiring.",
+  "ko_trust_profile": {
+    "no_rollbacks": true,
+    "no_downgrades": true,
+    "no_hidden_control": true,
+    "no_malicious_signatures": true,
+    "blacklist_respected": true,
+    "supported_languages_only": ["Javascript"]
+  },
+  "ko_binding": {
+    "offline_tokenizable": true,
+    "aln_sourze_ready": true,
+    "anchoring_target": "ALN-blockchain",
+    "ecosystem": "SourzeWizard"
+  },
+  "files_manifest": [
+    { "chunk": 1, "file": "VirtualObjectExcavator.js", "path": "javaspectre-core/src/core/VirtualObjectExcavator.js" },
+    { "chunk": 2, "file": "ExcavationSessionManager.js", "path": "javaspectre-core/src/core/ExcavationSessionManager.js" },
+    { "chunk": 3, "file": "VirtualObjectScoreEngine.js", "path": "javaspectre-core/src/core/VirtualObjectScoreEngine.js" },
+    { "chunk": 4, "file": "TransparencyEnvelope.js", "path": "javaspectre-core/src/safety/TransparencyEnvelope.js" },
+    { "chunk": 5, "file": "ExcavationSafetyProfile.js", "path": "javaspectre-core/src/safety/ExcavationSafetyProfile.js" },
+    { "chunk": 6, "file": "AnchoringService.js", "path": "javaspectre-core/src/anchoring/AnchoringService.js" },
+    { "chunk": 7, "file": "AlnGovernanceObjects.js", "path": "javaspectre-core/src/governance/AlnGovernanceObjects.js" },
+    { "chunk": 8, "file": "chatResearchBootstrap.js", "path": "javaspectre-core/src/server/chatResearchBootstrap.js" },
+    { "chunk": 9, "file": "sourzewizard.ko.javaspectre.complete.v1.json", "path": "javaspectre-core/docs/governance/sourzewizard.ko.javaspectre.complete.v1.json" }
+  ],
+  "generation_metadata": {
+    "total_files": 9,
+    "generation_date": "2026-03-04",
+    "hex_validity_proof": "0x2F8E5A9C1D7B4F3E6A0C9D8B2E5A7F1C",
+    "sovereignty_verified": true,
+    "aln_ready": true
+  }
+}
